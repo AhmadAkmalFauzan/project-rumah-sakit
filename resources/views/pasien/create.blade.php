@@ -85,7 +85,7 @@
             <select name="kodeRuangan" class="form-select" required>
                 <option value="">-- Pilih Ruangan --</option>
                 @foreach($ruangans as $ruangan)
-                    <option value="{{ $ruangan->idRuangan }}">{{ $ruangan->namaRuangan }} (Sisa: {{ $ruangan->dayaTampung }})</option>
+                    <option value="{{ $ruangan->kodeRuangan }}">{{ $ruangan->namaRuangan }} (Sisa: {{ $ruangan->dayaTampung }})</option>
                 @endforeach
             </select>
         </div>

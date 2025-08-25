@@ -9,6 +9,8 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         .navbar .profile-img {
             width: 36px;
@@ -50,6 +52,12 @@
                     <a class="nav-link px-3" href="{{ route('ruangan.index') }}">
                         <i class="bi bi-person-badge me-2"></i> Data Ruangan
                     </a>
+                    <li class="nav-item">
+                         <a class="nav-link px-3" href="{{ route('pasien.index') }}">
+                        <i class="bi bi-person-badge me-2"></i> Data Pasien
+                    </a>
+                    
+                    </li>
                 </li>
 
                 <!-- User Dropdown -->

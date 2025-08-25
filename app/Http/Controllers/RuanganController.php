@@ -29,15 +29,18 @@ class RuanganController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'idRuangan'   => 'required|string|max:255|unique:ruangans,idRuangan',
+            'idRuangan' => 'required|string|max:255|unique:ruangans,idRuangan',
             'kodeRuangan' => 'required|string|max:50|unique:ruangans,kodeRuangan',
             'namaRuangan' => 'required|string|max:255',
             'dayaTampung' => 'required|integer',
-            'lokasi'      => 'required|string|max:255',
+            'lokasi' => 'required|string|max:255',
+
         ], [
             'kodeRuangan.unique' => 'Kode Ruangan sudah digunakan.',
-            'idRuangan.unique'   => 'ID Ruangan sudah digunakan.',
+            'idRuangan.unique' => 'ID Ruangan sudah digunakan.',
         ]);
+
+        $validated['current_capacity'] = 0; 
 
         Ruangan::create($validated);
 
@@ -60,11 +63,11 @@ class RuanganController extends Controller
     public function update(Request $request, Ruangan $ruangan)
     {
         $validated = $request->validate([
-            'idRuangan'   => 'required|string|max:255|unique:ruangans,idRuangan,' . $ruangan->idRuangan . ',idRuangan',
+            'idRuangan' => 'required|string|max:255|unique:ruangans,idRuangan,' . $ruangan->idRuangan . ',idRuangan',
             'kodeRuangan' => 'required|string|max:50',
             'namaRuangan' => 'required|string|max:255',
             'dayaTampung' => 'required|integer',
-            'lokasi'      => 'required|string|max:255',
+            'lokasi' => 'required|string|max:255',
         ]);
 
         $ruangan->update($validated);

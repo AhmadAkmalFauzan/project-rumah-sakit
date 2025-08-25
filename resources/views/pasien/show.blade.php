@@ -5,7 +5,7 @@
     <h2>Detail Pasien</h2>
 
     <div class="card p-3">
-        <div class="mb-2"><strong>Nomor Rekam:</strong> {{ $pasien->NomorRekam }}</div>
+        <div class="mb-2"><strong>Nomor Rekam:</strong> {{ $pasien->NoRekam }}</div>
         <div class="mb-2"><strong>Nama Pasien:</strong> {{ $pasien->namaPasien }}</div>
         <div class="mb-2"><strong>Usia:</strong> {{ $pasien->usiaPasien }} tahun</div>
         <div class="mb-2"><strong>Jenis Kelamin:</strong> {{ $pasien->jenisKelamin=='L' ? 'Laki-laki' : 'Perempuan' }}</div>
@@ -20,6 +20,6 @@
     </div>
 
     <a href="{{ route('pasien.index') }}" class="btn btn-secondary mt-3">Kembali</a>
-    <a href="{{ route('pasien.edit', $pasien->NomorRekam) }}" class="btn btn-warning mt-3">Edit</a>
+    <a href="{{ route('pasien.edit', $pasien->NoRekam) }}" class="btn btn-warning mt-3">Edit</a>
 </div>
 @endsection
