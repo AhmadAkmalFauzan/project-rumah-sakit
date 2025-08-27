@@ -11,21 +11,23 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <a href="{{ route('pasien.create') }}" class="btn btn-primary mb-3">Tambah Pasien</a>
+        <a href="{{ route('pasien.create') }}" class="btn btn-primary mb-3">
+            <i class="bi bi-plus-circle"></i> Tambah Pasien
+        </a>
 
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Nomor Rekam</th>
-                    <th>Nama</th>
+                    <th class="text-center">Nama</th>
                     <th>Usia</th>
                     <th>Jenis Kelamin</th>
                     <th>Penyakit</th>
-                    <th>Dokter</th>
-                    <th>Ruangan</th>
-                    <th>Tanggal Masuk</th>
-                    <th>Tanggal Keluar</th>
-                    <th>Aksi</th>
+                    <th class="text-center">Dokter</th>
+                    <th class="text-center">Ruangan</th>
+                    <th class="text-center">Tanggal Masuk</th>
+                    <th class="text-center">Tanggal Keluar</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,16 +42,35 @@
                         <td>{{ $pasien->ruangan ? $pasien->ruangan->namaRuangan : '-' }}</td>
                         <td>{{ $pasien->tanggalMasuk }}</td>
                         <td>{{ $pasien->tanggalKeluar ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('pasien.show', $pasien->NoRekam) }}" class="btn btn-info btn-sm">Lihat</a>
-                            <a href="{{ route('pasien.edit', $pasien->NoRekam) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('pasien.destroy', $pasien->NoRekam) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Hapus pasien ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <!-- Lihat -->
+                                <a href="{{ route('pasien.show', $pasien->NoRekam) }}"
+                                    class="btn btn-outline-info btn-sm rounded-circle" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Lihat">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <!-- Edit -->
+                                <a href="{{ route('pasien.edit', $pasien->NoRekam) }}"
+                                    class="btn btn-outline-warning btn-sm rounded-circle" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <!-- Hapus -->
+                                <form action="{{ route('pasien.destroy', $pasien->NoRekam) }}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Hapus pasien ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>

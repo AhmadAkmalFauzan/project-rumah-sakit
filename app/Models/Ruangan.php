@@ -26,10 +26,12 @@ class Ruangan extends Model
     {
         return $this->hasMany(Dokter::class, 'idRuangan', 'idRuangan');
     }
-    public function pasiens()
+    public function pasien()
     {
         return $this->hasMany(Pasien::class, 'kodeRuangan', 'kodeRuangan');
+        // hasMany(ModelTujuan::class, foreignKey_di_tabel_pasien, localKey_di_tabel_ruangan)
     }
+
      public function kurangi()
     {
         if ($this->dayaTampung > 0) {

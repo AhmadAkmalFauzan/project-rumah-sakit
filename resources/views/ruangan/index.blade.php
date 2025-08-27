@@ -8,7 +8,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <a href="{{ route('ruangan.create') }}" class="btn btn-primary mb-3">Tambah Ruangan</a>
+        <a href="{{ route('ruangan.create') }}" class="btn btn-primary mb-3">
+            <i class="bi bi-plus-circle"></i> Tambah Ruangan
+        </a>
 
         <table class="table table-bordered">
             <thead>
@@ -29,16 +31,33 @@
                         <td>{{ $ruangan->namaRuangan }}</td>
                         <td>{{ $ruangan->dayaTampung }}</td>
                         <td>{{ $ruangan->lokasi }}</td>
-                        <td>
-                            <a href="{{ route('ruangan.show', $ruangan->idRuangan) }}" class="btn btn-info btn-sm">Lihat</a>
-                            <a href="{{ route('ruangan.edit', $ruangan->idRuangan) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('ruangan.destroy', $ruangan->idRuangan) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Hapus ruangan ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <!-- Lihat -->
+                                <a href="{{ route('ruangan.show', $ruangan->idRuangan) }}"
+                                    class="btn btn-outline-info btn-sm rounded-circle" data-bs-toggle="tooltip" title="Lihat">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <!-- Edit -->
+                                <a href="{{ route('ruangan.edit', $ruangan->idRuangan) }}"
+                                    class="btn btn-outline-warning btn-sm rounded-circle" data-bs-toggle="tooltip" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <!-- Hapus -->
+                                <form action="{{ route('ruangan.destroy', $ruangan->idRuangan) }}" method="POST"
+                                    class="d-inline" onsubmit="return confirm('Yakin ingin menghapus ruangan ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle"
+                                        data-bs-toggle="tooltip" title="Hapus">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>

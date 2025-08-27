@@ -74,18 +74,18 @@
             <label>Tanggal Masuk</label>
             <input type="date" name="tanggalMasuk" class="form-control" value="{{ old('tanggalMasuk') }}" required>
         </div>
-
+<!-- 
         <div class="mb-3">
             <label>Tanggal Keluar</label>
             <input type="date" name="tanggalKeluar" class="form-control" value="{{ old('tanggalKeluar') }}">
-        </div>
+        </div> -->
 
         <div class="mb-3">
             <label>Ruangan</label>
             <select name="kodeRuangan" class="form-select" required>
                 <option value="">-- Pilih Ruangan --</option>
                 @foreach($ruangans as $ruangan)
-                    <option value="{{ $ruangan->kodeRuangan }}">{{ $ruangan->namaRuangan }} (Sisa: {{ $ruangan->dayaTampung }})</option>
+                    <option value="{{ $ruangan->idRuangan }}">{{ $ruangan->namaRuangan }} (Sisa: {{ $ruangan->dayaTampung }})</option>
                 @endforeach
             </select>
         </div>

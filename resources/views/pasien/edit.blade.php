@@ -125,9 +125,10 @@
                         <option value="">-- Pilih Ruangan --</option>
                         @foreach($ruangans as $ruangan)
                             <option value="{{ $ruangan->kodeRuangan }}" 
+                            
                                 {{ $pasien->kodeRuangan==$ruangan->kodeRuangan ? 'selected' : '' }}>
                                 {{ $ruangan->namaRuangan }} 
-                                (Sisa: {{ $ruangan->dayaTampung - $ruangan->current_capacity }})
+                                (Sisa: {{ $ruangan->dayaTampung }})
                             </option>
                         @endforeach
                     </select>

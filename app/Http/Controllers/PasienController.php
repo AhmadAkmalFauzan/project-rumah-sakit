@@ -45,14 +45,14 @@ class PasienController extends Controller
         $validated = $request->validate([
             'NoRekam' => 'required|unique:pasiens,NoRekam',
             'namaPasien' => 'required',
-            'tanggalLahir' => 'required|date',
+            'tanggalLahir' => 'required|date|before_or_equal:today',
             'jenisKelamin' => 'required|in:L,P',
             'alamatPasien' => 'required',
             'kotaPasien' => 'required',
             'penyakitPasien' => 'required',
             'idDokter' => 'required|exists:dokters,idDokter',
-            'tanggalMasuk' => 'required|date',
-            'tanggalKeluar' => 'nullable|date',
+            'tanggalMasuk' => 'required|date|before_or_equal:today',
+            'tanggalKeluar' => 'nullable|date|after_or_equal:tanggalMasuk',
             'kodeRuangan' => 'required|exists:ruangans,kodeRuangan',
             'keterangan' => 'nullable|string',
         ]);
@@ -106,31 +106,29 @@ class PasienController extends Controller
         $dokters = Dokter::where('spesialisasi', $pasien->penyakitPasien)->get();
         return view('pasien.edit', compact('pasien', 'penyakitList', 'ruangans', 'dokters'));
     }
-
     public function update(Request $request, Pasien $pasien)
     {
         $request->validate([
             'namaPasien' => 'required',
-            'tanggalLahir' => 'required|date',
+            'tanggalLahir' => 'required|date|before_or_equal:today',
             'jenisKelamin' => 'required|in:L,P',
             'alamatPasien' => 'required',
             'kotaPasien' => 'required',
             'penyakitPasien' => 'required',
             'idDokter' => 'required|exists:dokters,idDokter',
-            'tanggalMasuk' => 'required|date',
-            'tanggalKeluar' => 'nullable|date',
+            'tanggalMasuk' => 'required|date|before_or_equal:today',
             'kodeRuangan' => 'required|exists:ruangans,kodeRuangan',
+            'tanggalKeluar' => 'nullable|date|after_or_equal:tanggalMasuk',
             'keterangan' => 'nullable|string',
         ]);
 
-        // Hitung ulang usia
         $usia = Carbon::parse($request->tanggalLahir)->age;
 
-        // Simpan data lama pasien
+        // simpan kondisi lama
         $oldKodeRuangan = $pasien->kodeRuangan;
         $oldTanggalKeluar = $pasien->tanggalKeluar;
 
-        // Update data pasien
+        // update pasien
         $pasien->update([
             'namaPasien' => $request->namaPasien,
             'tanggalLahir' => $request->tanggalLahir,
@@ -146,43 +144,39 @@ class PasienController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        // Ambil data ruangan lama & baru
         $ruanganLama = Ruangan::where('kodeRuangan', $oldKodeRuangan)->first();
         $ruanganBaru = Ruangan::where('kodeRuangan', $request->kodeRuangan)->first();
 
-        // 1. Pasien pindah ruangan
+        // pasien pindah ruangan
         if ($oldKodeRuangan !== $request->kodeRuangan) {
-            // Kurangi isi ruangan lama (kalau pasien belum keluar waktu itu)
-            if ($ruanganLama && $oldTanggalKeluar === null) {
-                if ($ruanganLama->current_capacity > 0) {
-                    $ruanganLama->decrement('current_capacity');
-                }
+            // kurangi ruangan lama (kalau pasien dulu belum keluar)
+            if ($ruanganLama && $oldTanggalKeluar === null && $ruanganLama->current_capacity > 0) {
+                $ruanganLama->increment('dayaTampung');
             }
-
-            // Tambah isi ruangan baru (kalau pasien masih aktif sekarang)
+            // tambah ke ruangan baru (kalau pasien belum keluar sekarang)
             if ($ruanganBaru && $request->tanggalKeluar === null) {
                 if ($ruanganBaru->current_capacity < $ruanganBaru->dayaTampung) {
-                    $ruanganBaru->increment('current_capacity');
+                    $ruanganBaru->decrement('dayaTampung');
                 } else {
-                    return redirect()->back()->with('error', 'Ruangan baru penuh, pilih ruangan lain.');
+                    return back()->with('error', 'Ruangan baru penuh!');
                 }
             }
         }
-        // 2. Pasien tetap di ruangan yang sama
+        // pasien tetap di ruangan yang sama
         else {
             if ($ruanganLama) {
-                // Pasien baru keluar (dulu null, sekarang diisi)
+                // kasus: dulu aktif, sekarang keluar → kapasitas berkurang
                 if ($oldTanggalKeluar === null && $request->tanggalKeluar !== null) {
                     if ($ruanganLama->current_capacity > 0) {
-                        $ruanganLama->decrement('current_capacity');
+                        $ruanganLama->increment('dayaTampung');
                     }
                 }
-                // Pasien dulu sudah keluar, sekarang masuk lagi (tanggalKeluar dihapus)
+                // kasus: dulu keluar, sekarang aktif lagi → kapasitas nambah
                 if ($oldTanggalKeluar !== null && $request->tanggalKeluar === null) {
                     if ($ruanganLama->current_capacity < $ruanganLama->dayaTampung) {
-                        $ruanganLama->increment('current_capacity');
+                        $ruanganLama->decrement('dayaTampung');
                     } else {
-                        return redirect()->back()->with('error', 'Ruangan sudah penuh, tidak bisa masuk lagi.');
+                        return back()->with('error', 'Ruangan penuh, pasien tidak bisa masuk lagi.');
                     }
                 }
             }
@@ -191,17 +185,17 @@ class PasienController extends Controller
         return redirect()->route('pasien.index')->with('success', 'Data pasien berhasil diperbarui.');
     }
 
-
-
     public function destroy(Pasien $pasien)
     {
         // Cari ruangan pasien
         $ruangan = Ruangan::where('kodeRuangan', $pasien->kodeRuangan)->first();
 
-        if ($ruangan) {
-            // Kalau pasien belum keluar → kurangi current_capacity
-            if ($pasien->tanggalKeluar === null && $ruangan->current_capacity > 0) {
-                $ruangan->decrement('current_capacity');
+        $masihDiruangan = !$pasien->tanggalKeluar || \Carbon\Carbon::parse($pasien->tanggalKeluar)->isFuture();
+
+        if ($masihDiruangan) {
+            // kembalikan slot ruangan karena pasien dihapus sebelum keluar
+            if ($ruangan) {
+                $ruangan->increment('dayaTampung');
             }
         }
 
